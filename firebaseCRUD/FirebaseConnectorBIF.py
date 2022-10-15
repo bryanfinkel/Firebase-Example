@@ -1,9 +1,12 @@
 # FirebaseConnectorBIF.py will be used to connect systemd like Hubspot, Google Analytics, and Comm100 to Firebase
-
+# Update Friday 10-14: removed firebaseConfig parameters from file, they are now called from .env
 
 import pyrebase
 import pandas as pd
 from datetime import date  # Return to this later, for dates/times -> https://dateutil.readthedocs.io/en/stable/
+from dotenv import load_dotenv
+load_dotenv()
+import os
 """ 
 csv was NOT installed w/pip3 because the module is already in PyCharm
 import csv
@@ -11,13 +14,13 @@ import csv
 
 # Set up Firebase
 firebaseConfig = {       # These are Bryan's Firebase credentials
-    "apiKey": "AIzaSyCJns_OH8FlIA8g7MlGxJhOqf---q2bzgc",
-    "authDomain": "test0922-52866.firebaseapp.com",
-    "projectId": "test0922-52866",
-    "storageBucket": "test0922-52866.appspot.com",
-    "messagingSenderId": "28451809789",
-    "appId": "1:28451809789:web:26ed0b26687d0576abd194",
-    "databaseURL": "https://test0922-52866-default-rtdb.firebaseio.com"
+    "apiKey": os.environ.get("apiKey2"),
+    "authDomain": os.environ.get("authDomain2"),
+    "projectId": os.environ.get("projectId2"),
+    "storageBucket": os.environ.get("storageBucket2"),
+    "messagingSenderId": os.environ.get("messagingSenderId2"),
+    "appId": os.environ.get("appId2"),
+    "databaseURL": os.environ.get("databaseURL2")
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)  # create a firebase app using credentials above
@@ -38,7 +41,7 @@ print("-------------")
 
 # Initialize the JSON UserObject with the temporary variables
 UserObject = {
-    "UniqueID": VarUniqueID,
+    "UniqueID": int(VarUniqueID),
     "FullName": {
         "FirstName": VarFirst,
         "MidName": VarMid,
@@ -66,6 +69,7 @@ UserChoice = input()
 if int(UserChoice) == 1:
     print("You've selected 'Enter 1 to add a record(s) using a .csv file'")
     print("Please enter your file name, including the suffix .csv")
+    # using file: FirebaseTestData.csv
     VarFileName = input()
 
     # Create DataFrame for the .csv test data
@@ -80,7 +84,8 @@ if int(UserChoice) == 1:
             len(df_fromCSV)):  # for reference: df_temp loops columns, df_temp.index loops rows, no () or [] needed here
 
         # Assign temporary variables to fill the UserObject that will be sent to Firebase
-        VarUniqueID = int(df_fromCSV.at[loop2, "UniqueID"] )       # UniqueID is the .csv column header
+        print(df_fromCSV.at[loop2, "UniqueID"])
+        VarUniqueID = int(df_fromCSV.at[loop2, "UniqueID"])       # UniqueID is the .csv column header
         print('VarUniqueID = ', VarUniqueID)
         VarFirst = df_fromCSV.at[loop2, "First"]              # First is the .csv column header
         print('VarFirst = ', VarFirst)
